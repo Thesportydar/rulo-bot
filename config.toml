@@ -1,0 +1,151 @@
+# Rulo MEP -> USDT -> ARS
+#   1. buy:     comprar USD MEP con ARS          (se usa el ask, ARS por USD)
+#   2. convert: convertir USD a USDT             (se usa el ask, USD por USDT)
+#   3. sell:    vender USDT por ARS              (se usa el bid, ARS por USDT)
+# Se evalúan todas las combinaciones buy x convert x sell.
+# `platform` identifica la plataforma entre pasos (ej. MEP y conversión en Fiwind = sin transferencia).
+# `source` es la fuente de precios y `slug` el id del proveedor en esa fuente.
+
+# Monto de referencia en USDT; CriptoYa ajusta el precio según volumen.
+amount_usdt = 1000
+# Intervalo de polling en segundos (lo usa scripts/install_launchd.sh).
+interval_seconds = 120
+
+[thresholds]
+open_pct = 1.0     # avisar cuando la mejor ruta llega a este %
+strong_pct = 1.5   # marcar como 🔥
+improve_pct = 0.3  # volver a avisar si mejora esta cantidad de puntos sobre el último aviso
+close_pct = 0.8    # considerar cerrada por debajo de esto (histéresis para no rebotar)
+top_routes = 5     # cuántas rutas listar en el aviso
+
+[market]
+timezone = "America/Argentina/Buenos_Aires"
+days = [0, 1, 2, 3, 4]  # lunes=0
+open = "11:00"
+close = "17:00"
+
+[freshness]
+max_age_minutes = 30  # descarta cotizaciones con timestamp más viejo que esto
+
+[telegram]
+# Token y chat id en .env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+enabled = true
+
+[[buy]]
+name = "Cocos"
+platform = "cocos"
+source = "comparadolar"
+slug = "cocos"
+pair = "USD/ARS"
+
+[[buy]]
+name = "Fiwind MEP"
+platform = "fiwind"
+source = "comparadolar"
+slug = "fiwind-mep"
+pair = "USD/ARS"
+
+[[buy]]
+name = "Plus Inversiones"
+platform = "plus"
+source = "comparadolar"
+slug = "plus-inversiones"
+pair = "USD/ARS"
+
+[[convert]]
+name = "Fiwind"
+platform = "fiwind"
+source = "criptoya"
+slug = "fiwind"
+pair = "USDT/USD"
+
+[[convert]]
+name = "Belo"
+platform = "belo"
+source = "criptoya"
+slug = "belo"
+pair = "USDT/USD"
+
+[[convert]]
+name = "Nexo"
+platform = "nexo"
+source = "criptoya"
+slug = "nexo"
+pair = "USDT/USD"
+
+[[convert]]
+name = "Ripio"
+platform = "ripio"
+source = "criptoya"
+slug = "ripio"
+pair = "USDT/USD"
+
+[[convert]]
+name = "Let'sBit"
+platform = "letsbit"
+source = "criptoya"
+slug = "letsbit"
+pair = "USDT/USD"
+
+[[sell]]
+name = "Belo"
+platform = "belo"
+source = "criptoya"
+slug = "belo"
+pair = "USDT/ARS"
+
+[[sell]]
+name = "Lemon"
+platform = "lemon"
+source = "criptoya"
+slug = "lemoncash"
+pair = "USDT/ARS"
+
+[[sell]]
+name = "Cocos Crypto"
+platform = "cocos"
+source = "criptoya"
+slug = "cocoscrypto"
+pair = "USDT/ARS"
+
+[[sell]]
+name = "Fiwind"
+platform = "fiwind"
+source = "criptoya"
+slug = "fiwind"
+pair = "USDT/ARS"
+
+[[sell]]
+name = "Ripio"
+platform = "ripio"
+source = "criptoya"
+slug = "ripio"
+pair = "USDT/ARS"
+
+[[sell]]
+name = "Nexo"
+platform = "nexo"
+source = "criptoya"
+slug = "nexo"
+pair = "USDT/ARS"
+
+[[sell]]
+name = "Takenos"
+platform = "takenos"
+source = "criptoya"
+slug = "takenos"
+pair = "USDT/ARS"
+
+[[sell]]
+name = "Let'sBit"
+platform = "letsbit"
+source = "criptoya"
+slug = "letsbit"
+pair = "USDT/ARS"
+
+[[sell]]
+name = "Plus Crypto"
+platform = "plus"
+source = "comparadolar"
+slug = "pluscrypto"
+pair = "USDT/ARS"

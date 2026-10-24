@@ -1,0 +1,4 @@
+project            = "rulo-bot"
+env                = "dev"
+terraform_role_arn = "arn:aws:iam::<dev-account-id>:role/TerraformExecutionRole"
+telegram_chat_id   = "<telegram-chat-id>"

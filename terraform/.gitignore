@@ -1,0 +1,7 @@
+.terraform/
+.build/
+*.tfstate*
+
+# valores reales de cada entorno (ver *.example)
+backend.conf
+*.tfvars

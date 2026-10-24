@@ -1,0 +1,7 @@
+bucket  = "<tfstate-bucket>"
+region  = "us-east-1"
+profile = "terraform-admin"
+encrypt = true
+assume_role = {
+  role_arn = "arn:aws:iam::<mgmt-account-id>:role/TerraformStateAccessRole"
+}
