@@ -40,3 +40,9 @@ variable "log_retention_days" {
   type    = number
   default = 14
 }
+
+variable "summary_schedule_expression" {
+  description = "Cron en hora de Argentina para el resumen diario (al cierre del mercado)"
+  type        = string
+  default     = "cron(0 17 ? * MON-FRI *)"
+}

@@ -17,8 +17,8 @@ de mercado; también corre local (`python3 -m rulo`).
 | `rulo/models.py` | `Quote` (cotización normalizada), `Venue` (plataforma de un paso), `Route` (cálculo del %) |
 | `rulo/sources/` | adaptadores de fuentes de precios (`comparadolar`, `criptoya`) + `build_sources` |
 | `rulo/evaluator.py` | valida cotizaciones (faltantes, ≤0, viejas, tasa fuera de rango) y arma las rutas ordenadas |
-| `rulo/alerts.py` | máquina de estados open/improve/close (`decide`) y formato HTML de los mensajes |
-| `rulo/state.py` | persistencia del estado: `FileStore` local o `DynamoStore` si existe `RULO_STATE_TABLE` |
+| `rulo/alerts.py` | máquina de estados open/improve/close (`decide`), formato HTML de avisos y del resumen diario |
+| `rulo/state.py` | estado (ruta abierta + métricas del día, `roll_day`): `FileStore` local o `DynamoStore` si existe `RULO_STATE_TABLE` |
 | `rulo/notifier.py` | Telegram (token por env o SSM) o consola |
 | `rulo/market.py` | horario de mercado y fecha local |
 | `config.toml` | plataformas, umbrales, horario; se empaqueta dentro del zip de la Lambda |
@@ -65,7 +65,8 @@ terraform plan -var-file=dev.tfvars
   (`/rulo-bot/dev/telegram-bot-token`, `ignore_changes` en TF) y en `.env` local, que está en `.gitignore`.
 - El zip de la Lambda lo arma `archive_file` desde `rulo/**/*.py` + `config.toml`; cambiar cualquiera
   de los dos y hacer `terraform apply` redeploya.
-- El schedule usa `schedule_expression_timezone`, así que el cron está en hora de Argentina.
+- Hay dos schedules (monitor cada 2 min y resumen a las 17 con `{"args": ["--summary"]}`); ambos usan
+  `schedule_expression_timezone`, así que el cron está en hora de Argentina.
 - Antes de un `apply` mostrá el plan; no apliques en otras cuentas sin pedirlo.
 
 ## Gotchas

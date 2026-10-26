@@ -5,7 +5,23 @@ import os
 from pathlib import Path
 from typing import Protocol
 
-EMPTY_STATE = {"open": False, "last_pct": None, "fail_streak": 0, "day": None}
+EMPTY_STATE = {
+    "open": False,
+    "last_pct": None,
+    "fail_streak": 0,
+    "day": None,
+    # métricas del día para el resumen de cierre
+    "runs": 0,
+    "fail_runs": 0,
+    "alerts": 0,
+    "best": None,  # {"pct", "route" (HTML), "at" (HH:MM)}
+}
+
+
+def roll_day(state: dict, today: str) -> None:
+    """Al cambiar de día se descarta todo: una ruta abierta de ayer ya no vale y las métricas arrancan de cero."""
+    if state["day"] != today:
+        state.update({**EMPTY_STATE, "day": today})
 
 
 class StateStore(Protocol):

@@ -69,6 +69,9 @@ pair = "USDT/USD"
 Además avisa si hay 5 corridas seguidas sin datos. Una ruta abierta de un día anterior se descarta,
 así el primer aviso de cada día es siempre de apertura.
 
+A las 17:00 manda un **resumen del día** con la mejor ruta (y a qué hora), cantidad de corridas y de
+avisos. Sirve también como señal de vida: si no hubo corridas, el resumen llega como ⚠️.
+
 ## Uso local
 
 Requiere Python 3.11+, sin dependencias.
@@ -77,6 +80,7 @@ Requiere Python 3.11+, sin dependencias.
 cp .env.example .env            # TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 python3 -m rulo --dry-run       # tabla de rutas, sin avisar ni guardar estado
 python3 -m rulo --test-notify   # mensaje de prueba a Telegram
+python3 -m rulo --summary       # resumen del día
 python3 -m rulo --force         # una corrida real ignorando el horario
 python3 -m unittest             # tests (sin red)
 ```
@@ -87,7 +91,7 @@ Sin token, los avisos salen por consola. Para correrlo en la Mac cada `interval_
 ## Deploy en AWS
 
 Producción corre en Lambda, disparada por EventBridge Scheduler cada 2 minutos, de lunes a viernes de
-11 a 17 hora de Argentina. El estado va en DynamoDB y el token de Telegram en SSM. Todo entra en el
+11 a 17 hora de Argentina, más un segundo schedule a las 17:00 que invoca `--summary`. El estado va en DynamoDB y el token de Telegram en SSM. Todo entra en el
 free tier o cuesta fracciones de centavo por mes.
 
 ```

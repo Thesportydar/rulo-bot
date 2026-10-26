@@ -160,3 +160,25 @@ resource "aws_scheduler_schedule" "monitor" {
     }
   }
 }
+
+resource "aws_scheduler_schedule" "summary" {
+  name                         = "${local.name}-summary"
+  schedule_expression          = var.summary_schedule_expression
+  schedule_expression_timezone = "America/Argentina/Buenos_Aires"
+  state                        = var.schedule_enabled ? "ENABLED" : "DISABLED"
+
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  target {
+    arn      = aws_lambda_function.monitor.arn
+    role_arn = aws_iam_role.scheduler.arn
+    input    = jsonencode({ args = ["--summary"] })
+
+    retry_policy {
+      maximum_retry_attempts       = 2
+      maximum_event_age_in_seconds = 600
+    }
+  }
+}

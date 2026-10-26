@@ -65,3 +65,18 @@ def format_message(event: str, routes: list[Route], th: dict) -> str:
     lines += [f"{i}. {format_route(r, sells)}" for i, (r, sells) in enumerate(top, 1)]
     lines += ["", f"Costo por USDT: {_fmt(best.cost_per_usdt)} ARS"]
     return "\n".join(lines)
+
+
+def format_summary(state: dict, day: str) -> str:
+    dd, mm = day[8:10], day[5:7]
+    if not state["runs"]:
+        return f"⚠️ <b>Resumen {dd}/{mm}</b>: no hubo corridas hoy. Revisar la Lambda o el schedule."
+    lines = [f"📊 <b>Resumen {dd}/{mm}</b>", ""]
+    best = state["best"]
+    if best:
+        lines.append(f"Mejor ruta del día ({best['at']}): {best['route']}")
+    else:
+        lines.append("Sin rutas válidas en todo el día.")
+    failed = f" ({state['fail_runs']} sin datos)" if state["fail_runs"] else ""
+    lines.append(f"Corridas: {state['runs']}{failed} · Avisos: {state['alerts']}")
+    return "\n".join(lines)

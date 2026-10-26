@@ -2,11 +2,11 @@ import unittest
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
-from rulo.alerts import collapse, decide, format_message
+from rulo.alerts import collapse, decide, format_message, format_summary
 from rulo.evaluator import evaluate
 from rulo.market import is_market_open
 from rulo.models import Quote, Venue
-from rulo.state import EMPTY_STATE
+from rulo.state import EMPTY_STATE, roll_day
 
 NOW = datetime(2026, 10, 26, 15, 0, tzinfo=timezone.utc)
 TH = {"open_pct": 1.0, "strong_pct": 1.5, "improve_pct": 0.3, "close_pct": 0.8, "top_routes": 5}
@@ -82,6 +82,27 @@ class FormatTest(unittest.TestCase):
         msg = format_message("open", routes, TH)
         self.assertIn("🔥", msg)
         self.assertIn("vender en Belo / Lemon", msg)
+
+
+class DailySummaryTest(unittest.TestCase):
+    def test_roll_day_resets_open_route_and_metrics(self):
+        state = {**EMPTY_STATE, "day": "2026-10-23", "open": True, "last_pct": 1.2, "runs": 180, "alerts": 2}
+        roll_day(state, "2026-10-26")
+        self.assertEqual(state, {**EMPTY_STATE, "day": "2026-10-26"})
+        state["runs"] = 5
+        roll_day(state, "2026-10-26")
+        self.assertEqual(state["runs"], 5)
+
+    def test_summary(self):
+        state = {**EMPTY_STATE, "runs": 180, "fail_runs": 2, "alerts": 1,
+                 "best": {"pct": 1.2, "route": "<b>1,20%</b> · ruta", "at": "14:20"}}
+        msg = format_summary(state, "2026-10-26")
+        self.assertIn("Resumen 26/10", msg)
+        self.assertIn("(14:20): <b>1,20%</b> · ruta", msg)
+        self.assertIn("Corridas: 180 (2 sin datos) · Avisos: 1", msg)
+
+    def test_summary_without_runs_warns(self):
+        self.assertIn("⚠️", format_summary(dict(EMPTY_STATE), "2026-10-26"))
 
 
 class MarketTest(unittest.TestCase):
