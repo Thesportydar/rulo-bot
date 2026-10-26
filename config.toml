@@ -87,6 +87,30 @@ source = "criptoya"
 slug = "letsbit"
 pair = "USDT/USD"
 
+# potencial: falta abrir cuenta y confirmar que acepta USD MEP
+[[convert]]
+name = "Decrypto"
+platform = "decrypto"
+source = "criptoya"
+slug = "decrypto"
+pair = "USDT/USD"
+
+# potencial: falta abrir cuenta y confirmar que acepta USD MEP
+[[convert]]
+name = "TiendaCrypto"
+platform = "tiendacrypto"
+source = "criptoya"
+slug = "tiendacrypto"
+pair = "USDT/USD"
+
+# potencial: falta abrir cuenta y confirmar que acepta USD MEP
+[[convert]]
+name = "SatoshiTango"
+platform = "satoshitango"
+source = "criptoya"
+slug = "satoshitango"
+pair = "USDT/USD"
+
 [[sell]]
 name = "Belo"
 platform = "belo"
@@ -148,4 +172,28 @@ name = "Plus Crypto"
 platform = "plus"
 source = "comparadolar"
 slug = "pluscrypto"
+pair = "USDT/ARS"
+
+# potencial: falta abrir cuenta
+[[sell]]
+name = "Decrypto"
+platform = "decrypto"
+source = "criptoya"
+slug = "decrypto"
+pair = "USDT/ARS"
+
+# potencial: falta abrir cuenta
+[[sell]]
+name = "TiendaCrypto"
+platform = "tiendacrypto"
+source = "criptoya"
+slug = "tiendacrypto"
+pair = "USDT/ARS"
+
+# potencial: falta abrir cuenta
+[[sell]]
+name = "SatoshiTango"
+platform = "satoshitango"
+source = "criptoya"
+slug = "satoshitango"
 pair = "USDT/ARS"

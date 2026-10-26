@@ -3,8 +3,8 @@
 Monitorea el **rulo MEP → USDT → ARS** y avisa por Telegram cuando deja ganancia.
 
 1. **Comprar** dólar MEP con pesos (Cocos, Fiwind, Plus Inversiones)
-2. **Convertir** USD a USDT (Fiwind, Belo, Nexo, Ripio, Let'sBit)
-3. **Vender** USDT por pesos (Belo, Lemon, Cocos Crypto, Fiwind, Ripio, Nexo, Takenos, Let'sBit, Plus Crypto)
+2. **Convertir** USD a USDT (Fiwind, Belo, Nexo, Ripio, Let'sBit, Decrypto, TiendaCrypto, SatoshiTango)
+3. **Vender** USDT por pesos (Belo, Lemon, Cocos Crypto, Fiwind, Ripio, Nexo, Takenos, Let'sBit, Plus Crypto, Decrypto, TiendaCrypto, SatoshiTango)
 
 Evalúa todas las combinaciones compra × conversión × venta y calcula:
 
