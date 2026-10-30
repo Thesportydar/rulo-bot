@@ -65,6 +65,11 @@ pair = "USDT/USD"
 | `strong_pct` | 1,5 | el aviso sale con 🔥 |
 | `improve_pct` | 0,3 | vuelve a avisar si mejora esta cantidad de puntos |
 | `close_pct` | 0,8 | avisa ⚪ cerrado por debajo de esto (histéresis) |
+| `confirm_runs` | 2 | corridas seguidas sobre `open_pct` antes de avisar |
+| `sanity.max_deviation_pct` | 5 | descarta cotizaciones que se alejan más de este % de la mediana de su paso |
+
+Los dos últimos filtran datos rotos de las APIs: Let'sBit llegó a cotizar ~0,94 USD por USDT durante
+una sola corrida y disparó rulos falsos de +12%.
 
 Además avisa si hay 5 corridas seguidas sin datos. Una ruta abierta de un día anterior se descarta,
 así el primer aviso de cada día es siempre de apertura.

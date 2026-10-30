@@ -9,6 +9,7 @@ EMPTY_STATE = {
     "open": False,
     "last_pct": None,
     "fail_streak": 0,
+    "pending": 0,  # corridas seguidas sobre open_pct sin confirmar todavía
     "day": None,
     # métricas del día para el resumen de cierre
     "runs": 0,

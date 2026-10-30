@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import time
 import urllib.request
 from typing import Protocol
 
@@ -17,10 +18,17 @@ class QuoteSource(Protocol):
         ...
 
 
-def get_json(url: str, timeout: float = 15):
+def get_json(url: str, timeout: float = 10, attempts: int = 2):
+    """GET con un reintento: las APIs a veces cortan el handshake TLS desde AWS."""
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.load(resp)
+    for attempt in range(attempts):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return json.load(resp)
+        except OSError:  # incluye URLError y timeouts
+            if attempt == attempts - 1:
+                raise
+            time.sleep(1)
 
 
 def build_sources(cfg: dict) -> dict[str, QuoteSource]:

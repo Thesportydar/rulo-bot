@@ -6,12 +6,20 @@ from rulo.models import Route
 
 
 def decide(best_pct: float, state: dict, th: dict) -> str | None:
-    """Devuelve 'open', 'improve', 'close' o None, y actualiza state en el lugar."""
+    """Devuelve 'open', 'improve', 'close' o None, y actualiza state en el lugar.
+
+    Para abrir, la ruta tiene que superar el umbral en `confirm_runs` corridas seguidas: un pico
+    de una sola corrida suele ser un dato roto de la fuente.
+    """
     if not state["open"]:
-        if best_pct >= th["open_pct"]:
-            state.update(open=True, last_pct=best_pct)
-            return "open"
-        return None
+        if best_pct < th["open_pct"]:
+            state["pending"] = 0
+            return None
+        state["pending"] += 1
+        if state["pending"] < th.get("confirm_runs", 1):
+            return None
+        state.update(open=True, last_pct=best_pct, pending=0)
+        return "open"
     if best_pct < th["close_pct"]:
         state.update(open=False, last_pct=None)
         return "close"

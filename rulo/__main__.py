@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import sys
-from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -21,17 +21,22 @@ FAIL_STREAK_ALERT = 5
 
 def fetch_all(cfg: dict) -> tuple[list, list[str]]:
     sources = build_sources(cfg)
-    pairs_by_source: dict[str, set[str]] = defaultdict(set)
-    for leg in LEGS:
-        for venue in cfg[leg]:
-            pairs_by_source[venue.source].add(venue.pair)
+    # un request por (fuente, par), en paralelo: con reintentos en serie no entraría en el timeout de la Lambda
+    jobs = sorted({(v.source, v.pair) for leg in LEGS for v in cfg[leg]})
+
+    def fetch(job: tuple[str, str]):
+        name, pair = job
+        try:
+            return sources[name].fetch({pair}), None
+        except Exception as e:  # noqa: BLE001 - si una fuente cae seguimos con las demás
+            return [], f"{name} {pair}: {e}"
 
     quotes, errors = [], []
-    for name, pairs in pairs_by_source.items():
-        try:
-            quotes += sources[name].fetch(pairs)
-        except Exception as e:  # noqa: BLE001 - si una fuente cae seguimos con las demás
-            errors.append(f"{name}: {e}")
+    with ThreadPoolExecutor(max_workers=len(jobs)) as pool:
+        for got, error in pool.map(fetch, jobs):
+            quotes += got
+            if error:
+                errors.append(error)
     return quotes, errors
 
 
@@ -77,6 +82,9 @@ def main(argv: list[str] | None = None) -> int:
     routes, problems = evaluate(cfg, quotes)
     for msg in errors:
         print(f"{stamp} error fuente {msg}", file=sys.stderr)
+    for msg in problems:
+        if "descartado" in msg or "fuera de rango" in msg:
+            print(f"{stamp} {msg}")
 
     if args.dry_run:
         for p in problems:
@@ -101,7 +109,7 @@ def main(argv: list[str] | None = None) -> int:
     if state["best"] is None or best.pct > state["best"]["pct"]:
         state["best"] = {"pct": best.pct, "route": format_route(*collapse(routes)[0]), "at": now.strftime("%H:%M")}
     event = decide(best.pct, state, cfg["thresholds"])
-    print(f"{stamp} mejor {best.pct:+.2f}% {best.id} evento={event}")
+    print(f"{stamp} mejor {best.pct:+.2f}% {best.id} mep={best.mep_ask} tasa={best.rate} venta={best.sell_bid} evento={event}")
     if event:
         state["alerts"] += 1
         notifier.send(format_message(event, routes, cfg["thresholds"]))

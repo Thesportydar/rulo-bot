@@ -74,5 +74,10 @@ terraform plan -var-file=dev.tfvars
 - `time` de CriptoYa es la hora de consulta, no de actualización: no sirve para detectar precios congelados.
 - comparadolar no da timestamp para USD (`ts = None`, se acepta).
 - Hay P2P con valores absurdos en CriptoYa (ej. `mexcp2p` con bid 1850); por eso están fuera de la config.
+- Los exchanges a veces devuelven un precio roto por una corrida (Let'sBit USDT/USD ~0,94 → rulos falsos de
+  +12%). Lo cubren el filtro contra la mediana del paso (`evaluator._drop_outliers`) y `confirm_runs`; no los saques.
+- Desde Lambda hay timeouts intermitentes de TLS contra CriptoYa y comparadolar: `get_json` reintenta y
+  `fetch_all` consulta cada (fuente, par) en paralelo para no pasarse del timeout de 60 s.
+- Los descartes por dato atípico y la tasa de la mejor ruta quedan en los logs para poder auditar alertas.
 - `ItemCount` de DynamoDB se actualiza cada ~6 h; para ver el estado usar `get-item` con `pk = "monitor"`.
 - launchd no ve los shims de pyenv; `scripts/install_launchd.sh` resuelve el binario real.

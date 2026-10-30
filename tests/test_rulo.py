@@ -61,6 +61,17 @@ class EvaluateTest(unittest.TestCase):
         self.assertEqual(len(problems), 3)
 
 
+class OutlierTest(unittest.TestCase):
+    def test_broken_rate_is_dropped(self):
+        # caso real: Let'sBit cotizó ~0,94 USD por USDT durante una corrida y abrió un rulo de +12%
+        cfg = {**CFG, "convert": CFG["convert"] + [venue("Nexo", "USDT/USD"), venue("LetsBit", "USDT/USD")]}
+        quotes = QUOTES + [quote("Nexo", "USDT/USD", ask=1.066), quote("LetsBit", "USDT/USD", ask=0.94)]
+        routes, problems = evaluate(cfg, quotes, now=NOW)
+        self.assertNotIn("LetsBit", {r.convert.name for r in routes})
+        self.assertTrue(any("LetsBit" in p and "descartado" in p for p in problems))
+        self.assertEqual(routes[0].convert.name, "Fiwind")  # 1,04 está a ~2,5% de la mediana: se mantiene
+
+
 class DecideTest(unittest.TestCase):
     def test_lifecycle(self):
         state = dict(EMPTY_STATE)
@@ -71,6 +82,14 @@ class DecideTest(unittest.TestCase):
         self.assertIsNone(decide(0.9, state, TH))  # histéresis: sigue abierto
         self.assertEqual(decide(0.7, state, TH), "close")
         self.assertFalse(state["open"])
+
+    def test_open_needs_confirmation(self):
+        th = {**TH, "confirm_runs": 2}
+        state = dict(EMPTY_STATE)
+        self.assertIsNone(decide(12.0, state, th))  # pico de una corrida
+        self.assertIsNone(decide(-1.0, state, th))
+        self.assertIsNone(decide(1.2, state, th))
+        self.assertEqual(decide(1.3, state, th), "open")
 
 
 class FormatTest(unittest.TestCase):

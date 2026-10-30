@@ -17,6 +17,11 @@ strong_pct = 1.5   # marcar como 🔥
 improve_pct = 0.3  # volver a avisar si mejora esta cantidad de puntos sobre el último aviso
 close_pct = 0.8    # considerar cerrada por debajo de esto (histéresis para no rebotar)
 top_routes = 5     # cuántas rutas listar en el aviso
+confirm_runs = 2   # corridas seguidas sobre open_pct antes de avisar (filtra picos de una corrida)
+
+[sanity]
+# descarta cotizaciones que se alejan más de este % de la mediana de su paso (datos rotos)
+max_deviation_pct = 5.0
 
 [market]
 timezone = "America/Argentina/Buenos_Aires"
